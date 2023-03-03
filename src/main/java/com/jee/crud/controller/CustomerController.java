@@ -2,10 +2,6 @@ package com.jee.crud.controller;
 
 import com.jee.crud.model.Customer;
 import com.jee.crud.repository.CustomerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +21,7 @@ public class CustomerController {
     }
 
     @PostMapping("/new")
-    public Customer addCustomer(@RequestBody Customer customer) {
+    public Customer createCustomer(@RequestBody Customer customer) {
         return customerRepository.save(customer);
     }
 }
