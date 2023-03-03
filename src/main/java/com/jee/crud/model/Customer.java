@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 @Table(name = "customer")
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "name", length = 80)
@@ -29,8 +29,7 @@ public class Customer {
     // constructeur
     public Customer() {}
 
-    public Customer(Long id, String name, String email, String address, String city, String country) {
-        this.id = id;
+    public Customer(String name, String email, String address, String city, String country) {
         this.name = name;
         this.email = email;
         this.address = address;

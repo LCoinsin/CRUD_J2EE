@@ -8,30 +8,29 @@ import java.sql.Timestamp;
 public class Command {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @ManyToOne
     @JoinColumn(name = "payment_status_command_id", referencedColumnName = "id")
     private PaymentStatusCommand paymentStatusCommand;
 
     @ManyToOne
-    @JoinColumn(name="book_isdn", referencedColumnName="isbn")
+    @JoinColumn(name = "book_isbn", referencedColumnName = "isbn")
     private Book book;
 
     @Column(name = "quantity")
     private int quantity;
 
     @ManyToOne
-    @JoinColumn(name="customer_id", referencedColumnName="id")
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private Customer customer;
 
+    // constructeurs, getters et setters
 
-    // constructeur par défaut
     public Command() {}
 
-    public Command(Long id, PaymentStatusCommand paymentStatusCommand, Book book, int quantity, Customer customer) {
-        this.id = id;
+    public Command(PaymentStatusCommand paymentStatusCommand, Book book, int quantity, Customer customer) {
         this.paymentStatusCommand = paymentStatusCommand;
         this.book = book;
         this.quantity = quantity;
@@ -40,11 +39,11 @@ public class Command {
 
     // getters et setters
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
