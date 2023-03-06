@@ -1,6 +1,5 @@
 package com.jee.crud.controller;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.jee.crud.model.Book;
 import com.jee.crud.model.Command;
 import com.jee.crud.model.Customer;
@@ -9,16 +8,15 @@ import com.jee.crud.repository.BookRepository;
 import com.jee.crud.repository.CommandRepository;
 import com.jee.crud.repository.CustomerRepository;
 import com.jee.crud.repository.PaymentStatusCommandRepository;
-import org.apache.tomcat.util.json.JSONParser;
-import org.apache.tomcat.util.json.ParseException;
+
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,13 +41,54 @@ public class CommandController {
     }
 
     @GetMapping("/{command}")
-    public List<Command> getCommandsByPaymentStatusCommandId(@PathVariable int command) {
-        PaymentStatusCommand paymentStatusCommand = paymentStatusCommandRepository.findById(command).orElse(null);
+    public List<Command> getCommandsByPaymentStatusCommandId(@PathVariable int paymentId) {
+        PaymentStatusCommand paymentStatusCommand = paymentStatusCommandRepository.findById(paymentId).orElse(null);
         if (paymentStatusCommand != null) {
             return commandRepository.findByPaymentStatusCommand(paymentStatusCommand);
         } else {
             System.out.println("getCommandsByPaymentStatusCommandId vide ");
             return null;
+        }
+    }
+    
+    @DeleteMapping("/delete/{command}")
+    public ResponseEntity<String> deleteCommand(@PathVariable int paymentId) {
+    	PaymentStatusCommand paymentStatusCommand = paymentStatusCommandRepository.findById(paymentId).orElse(null);
+    	if (paymentStatusCommand != null) {
+    		List<Command> commands = commandRepository.findByPaymentStatusCommand(paymentStatusCommand);
+    		for(Command command_to_delete: commands) {
+    			commandRepository.delete(command_to_delete);
+    		}
+    		paymentStatusCommandRepository.delete(paymentStatusCommand);
+    		return ResponseEntity.ok("Success");
+    	}
+    	else {
+    		return ResponseEntity.notFound().build();
+    	}
+    }
+    
+    @PutMapping("/quantity/{commandId}")
+    public ResponseEntity<String> updateQuantity(@RequestBody String commandJson, @PathVariable int commandId) {
+        Command command = commandRepository.findById(commandId).orElse(null);
+        
+        // parsing file "JSONExample.json"
+        Object obj;
+        long quantity = 0;
+		try {
+			obj = new JSONParser().parse(commandJson);
+			JSONObject jo = (JSONObject) obj;
+			quantity = (long) jo.get("quantity");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			return ResponseEntity.ok("JSON is not correctly set. 'quantity' data must be set with an integer value.");
+		}
+		
+        if(command!=null) {
+        	command.setQuantity((int)quantity);
+        	commandRepository.save(command);
+            return ResponseEntity.ok("Success");
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 
